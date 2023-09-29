@@ -1,16 +1,19 @@
 package app.netlify.aslanidis.librarymanagementsystem.restcontroller;
 
+import app.netlify.aslanidis.librarymanagementsystem.dto.BookDTO;
 import app.netlify.aslanidis.librarymanagementsystem.model.Book;
 import app.netlify.aslanidis.librarymanagementsystem.service.IBookService;
+import app.netlify.aslanidis.librarymanagementsystem.service.exceptions.EntityNotFoundException;
+import app.netlify.aslanidis.librarymanagementsystem.service.utilities.DTOConverter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/books/")
+@RequestMapping("/api/books")
 public class BookRestController {
 
     private final IBookService bookService;
@@ -21,34 +24,34 @@ public class BookRestController {
     }
 
     @PostMapping
-    public Book createBook(@RequestBody Book book) {
-        return bookService.createBook(book);
+    public BookDTO createBook(@RequestBody BookDTO bookDTO) throws EntityNotFoundException {
+        return bookService.createBook(bookDTO);
     }
 
     @PutMapping("/{bookId}")
-    public ResponseEntity<Book> updateBook(@PathVariable("bookId") Long bookId, @RequestBody Book book) {
-        Book updatedBook = bookService.updateBook(bookId, book);
+    public ResponseEntity<BookDTO> updateBook(@PathVariable("bookId") Long bookId, @RequestBody BookDTO bookDTO) throws EntityNotFoundException {
+        BookDTO updatedBook = bookService.updateBook(bookId, bookDTO);
         return ResponseEntity.ok(updatedBook);
     }
 
     @DeleteMapping("/{bookId}")
-    public void deleteBook(@PathVariable("bookId") Long bookId) {
+    public void deleteBook(@PathVariable("bookId") Long bookId) throws EntityNotFoundException {
         bookService.deleteBook(bookId);
     }
 
     @GetMapping("/{bookId}")
-    public Book getBookById(@PathVariable("bookId") Long bookId) {
+    public BookDTO getBookById(@PathVariable("bookId") Long bookId) throws EntityNotFoundException {
         return bookService.getBookById(bookId);
     }
 
     @GetMapping
-    public List<Book> getAllBooks() {
+    public List<BookDTO> getAllBooks() {
         return bookService.getAllBooks();
     }
 
-    @GetMapping("/title/{title}")
-    public ResponseEntity<List<Book>> getBooksByTitle(@PathVariable String title) {
-        List<Book> books = bookService.getBooksByTitle(title);
+    @GetMapping("/search-by-title/{title}")
+    public ResponseEntity<List<BookDTO>> getBooksByTitle(@PathVariable String title) {
+        List<BookDTO> books = bookService.getBooksByTitle(title);
         return ResponseEntity.ok(books);
     }
 
@@ -57,9 +60,15 @@ public class BookRestController {
         return bookService.getTotalCount();
     }
 
-    @GetMapping("/count/borrowed")
-    public Long getTotalBorrowedBooks() {
-        return bookService.getTotalBorrowedBooks();
+    @GetMapping("/by-publisher/{publisherId}")
+    public List<BookDTO> getBooksByPublisher(@PathVariable Long publisherId) {
+        List<Book> books = bookService.findBooksByPublisherId(publisherId);
+        return books.stream().map(DTOConverter::convertBookToDTO).collect(Collectors.toList());
     }
 
+    @GetMapping("/by-author/{authorId}")
+    public List<BookDTO> getBooksByAuthor(@PathVariable Long authorId) {
+        List<Book> books = bookService.findBooksByAuthorId(authorId);
+        return books.stream().map(DTOConverter::convertBookToDTO).collect(Collectors.toList());
+    }
 }

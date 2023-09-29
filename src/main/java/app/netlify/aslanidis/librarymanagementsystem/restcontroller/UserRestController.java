@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/users/")
+@RequestMapping("/api/users")
 public class UserRestController {
 
     private final IUserService userService;
@@ -30,7 +30,7 @@ public class UserRestController {
         return userService.getUserById(userId);
     }
 
-    @GetMapping("/phone/{phone}")
+    @GetMapping("/search-by-phone/{phone}")
     public ResponseEntity<User> getUserByPhone(@PathVariable String phone) throws EntityNotFoundException {
         User user = userService.getUserByPhone(phone);
         return ResponseEntity.ok(user);

@@ -1,8 +1,16 @@
 package app.netlify.aslanidis.librarymanagementsystem.dto;
 
-public class BorrowRequest {
+public class ReturnRequest {
     private Long userId;
     private Long bookId;
+
+    public ReturnRequest() {
+    }
+
+    public ReturnRequest(Long userId, Long bookId) {
+        this.userId = userId;
+        this.bookId = bookId;
+    }
 
     public Long getUserId() {
         return userId;

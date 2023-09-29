@@ -26,4 +26,7 @@ public class User {
     @Column(name = "PHONE", nullable = false, unique = true)
     private String phone;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Borrow> borrows; // One user can borrow multiple books
+
 }

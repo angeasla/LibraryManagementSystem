@@ -1,5 +1,6 @@
 package app.netlify.aslanidis.librarymanagementsystem.service;
 
+import app.netlify.aslanidis.librarymanagementsystem.dto.BookDTO;
 import app.netlify.aslanidis.librarymanagementsystem.model.Book;
 import app.netlify.aslanidis.librarymanagementsystem.service.exceptions.EntityNotFoundException;
 
@@ -7,14 +8,16 @@ import java.util.List;
 
 public interface IBookService {
     Long getTotalCount();
-    Long getTotalBorrowedBooks();
-    List<Book> getAllBooks();
-    Book getBookById(Long id);
+    List<BookDTO> getAllBooks();
+    BookDTO getBookById(Long id) throws EntityNotFoundException;
     List<Book> getByIds(List<Long> ids);
-    List<Book> getBooksByTitle(String title);
-    Book createBook(Book book);
-    Book updateBook(Long bookId, Book updatedBook);
+    List<BookDTO> getBooksByTitle(String title);
+    BookDTO createBook(BookDTO bookDTO) throws EntityNotFoundException;
+    BookDTO updateBook(Long bookId, BookDTO bookDTO) throws EntityNotFoundException;
     Book save(Book book);
-    void deleteBook(Long bookId);
-    boolean hasUsage(Book book);
+    void deleteBook(Long bookId) throws EntityNotFoundException;
+    Book getBookByIdToDelete(Long bookId) throws EntityNotFoundException;
+    Book updateBookQuantity(Book book);
+    List<Book> findBooksByPublisherId(Long publisherId);
+    List<Book> findBooksByAuthorId(Long authorId);
 }

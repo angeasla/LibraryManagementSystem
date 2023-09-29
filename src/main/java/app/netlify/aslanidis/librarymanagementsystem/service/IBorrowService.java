@@ -3,16 +3,17 @@ package app.netlify.aslanidis.librarymanagementsystem.service;
 import app.netlify.aslanidis.librarymanagementsystem.model.Book;
 import app.netlify.aslanidis.librarymanagementsystem.model.Borrow;
 import app.netlify.aslanidis.librarymanagementsystem.model.User;
+import app.netlify.aslanidis.librarymanagementsystem.service.exceptions.EntityNotFoundException;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface IBorrowService {
-    List<Borrow> getAll();
-    Borrow getById(Long id);
-    List<Borrow> getAllUnreturned();
-    Borrow addNew(Borrow borrow);
-    Borrow save(Borrow borrow);
-    Long getCountByUser(User user);
-    List<Book> getBooksByIds(List<Long> ids);
-    User getUserById(Long userId);
+
+    Optional<Borrow> borrowBook(Long userId, Long bookId);
+    Optional<Borrow> returnBook(Long userId, Long bookId) throws EntityNotFoundException;
+    List<Borrow> getActiveBorrows();
+    List<Borrow> getActiveBorrowsByUser(User user);
+    List<Borrow> getBorrowHistoryByUser(User user);
+    List<Borrow> getBorrowHistoryByBook(Book book);
 }

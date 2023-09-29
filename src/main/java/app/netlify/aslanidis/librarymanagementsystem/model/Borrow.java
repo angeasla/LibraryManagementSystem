@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.util.Date;
-import java.util.List;
 
 
 @Entity
@@ -13,10 +12,8 @@ import java.util.List;
 @Table(name = "BORROWS")
 public class Borrow {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "BORROW_ID", nullable = false)
-    private Long borrowId;
+    @EmbeddedId
+    private BorrowId id;
 
     @Column(name = "BORROW_DATE", nullable = false)
     private Date borrowDate;
@@ -28,11 +25,14 @@ public class Borrow {
     private Integer returned;
 
     @JsonIgnore
-    @OneToOne(fetch = FetchType.LAZY)
-    @PrimaryKeyJoinColumn(name = "USER_ID")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @MapsId("userId")  // This maps the userId attribute of embedded id
+    @JoinColumn(name = "USER_ID")
     private User user;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "borrow", cascade = CascadeType.ALL)
-    private List<BorrowedBook> borrowedBooks;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @MapsId("bookId")  // This maps the bookId attribute of embedded id
+    @JoinColumn(name = "BOOK_ID")
+    private Book book;
 }

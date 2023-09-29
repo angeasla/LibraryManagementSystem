@@ -59,12 +59,6 @@ public class UserServiceImpl implements IUserService {
         userRepository.deleteById(userId);
     }
 
-    @Override
-    public boolean hasUsage(User user) {
-        return borrowService.getCountByUser(user) > 0;
-    }
-
-
     // Helper method to perform validation using the UserValidator
     /*private void validateUser(UserDTO userDto) {
         Errors errors = new BeanPropertyBindingResult(userDto, "user");

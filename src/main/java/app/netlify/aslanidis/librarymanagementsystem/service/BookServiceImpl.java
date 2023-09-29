@@ -1,23 +1,37 @@
 package app.netlify.aslanidis.librarymanagementsystem.service;
 
 
-import app.netlify.aslanidis.librarymanagementsystem.common.Constants;
+import app.netlify.aslanidis.librarymanagementsystem.dto.BookDTO;
+import app.netlify.aslanidis.librarymanagementsystem.model.Author;
 import app.netlify.aslanidis.librarymanagementsystem.model.Book;
+import app.netlify.aslanidis.librarymanagementsystem.model.Publisher;
+import app.netlify.aslanidis.librarymanagementsystem.repository.AuthorRepository;
 import app.netlify.aslanidis.librarymanagementsystem.repository.BookRepository;
+import app.netlify.aslanidis.librarymanagementsystem.repository.PublisherRepository;
+import app.netlify.aslanidis.librarymanagementsystem.service.exceptions.EntityNotFoundException;
+import app.netlify.aslanidis.librarymanagementsystem.service.utilities.DTOConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
 public class BookServiceImpl implements IBookService {
 
-    @Autowired
     private BookRepository bookRepository;
+    private AuthorRepository authorRepository;
+    private PublisherRepository publisherRepository;
 
     @Autowired
-    private IBorrowedBookService borrowedBookService;
+    public BookServiceImpl(BookRepository bookRepository,
+                           AuthorRepository authorRepository,
+                           PublisherRepository publisherRepository) {
+        this.bookRepository = bookRepository;
+        this.authorRepository = authorRepository;
+        this.publisherRepository = publisherRepository;
+    }
 
     @Override
     public Long getTotalCount() {
@@ -25,18 +39,18 @@ public class BookServiceImpl implements IBookService {
     }
 
     @Override
-    public Long getTotalBorrowedBooks() {
-        return bookRepository.countByStatus(Constants.BOOK_BORROWED);
+    public List<BookDTO> getAllBooks() {
+        List<Book> books = bookRepository.findAll();
+        return books.stream()
+                .map(DTOConverter::convertBookToDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<Book> getAllBooks() {
-        return bookRepository.findAll();
-    }
-
-    @Override
-    public Book getBookById(Long id) {
-        return bookRepository.findById(id).get();
+    public BookDTO getBookById(Long id) throws EntityNotFoundException {
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Book not found"));
+        return DTOConverter.convertBookToDTO(book);
     }
 
     @Override
@@ -45,26 +59,38 @@ public class BookServiceImpl implements IBookService {
     }
 
     @Override
-    public List<Book> getBooksByTitle(String title) {
-        return bookRepository.findBookByTitleContainingIgnoreCase(title);
+    public List<BookDTO> getBooksByTitle(String title) {
+        List<Book> books = bookRepository.findBookByTitleContainingIgnoreCase(title);
+        return books.stream()
+                .map(DTOConverter::convertBookToDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Book createBook(Book book) {
-        book.setStatus(Constants.BOOK_AVAILABLE);
-        return bookRepository.save(book);
+    public BookDTO createBook(BookDTO bookDTO) throws EntityNotFoundException {
+        Book book = DTOConverter.convertDTOToBook(bookDTO);
+        validateAuthorAndPublisher(book);
+        Book savedBook = bookRepository.save(book);
+        return DTOConverter.convertBookToDTO(savedBook);
     }
 
     @Override
-    public Book updateBook(Long bookId, Book updatedBook) {
-        Book book = getBookById(bookId);
-        book.setTitle(updatedBook.getTitle());
-        book.setAuthor(updatedBook.getAuthor());
-        book.setIsbn(updatedBook.getIsbn());
-        book.setPublisher(updatedBook.getPublisher());
-        book.setPages(updatedBook.getPages());
-        book.setStatus(Constants.BOOK_AVAILABLE);
-        return bookRepository.save(book);
+    public BookDTO updateBook(Long bookId, BookDTO bookDTO) throws EntityNotFoundException {
+        Book bookToUpdate = DTOConverter.convertDTOToBook(bookDTO);
+        validateAuthorAndPublisher(bookToUpdate);
+
+        Book existingBook = bookRepository.findById(bookId)
+                .orElseThrow(() -> new EntityNotFoundException("Book not found"));
+        existingBook.setTitle(bookToUpdate.getTitle());
+        existingBook.setAuthor(bookToUpdate.getAuthor());
+        existingBook.setIsbn(bookToUpdate.getIsbn());
+        existingBook.setPublisher(bookToUpdate.getPublisher());
+        existingBook.setPages(bookToUpdate.getPages());
+        existingBook.setPublicationYear(bookToUpdate.getPublicationYear());
+        existingBook.setQuantity(bookToUpdate.getQuantity());
+
+        Book updatedBook = bookRepository.save(existingBook);
+        return DTOConverter.convertBookToDTO(updatedBook);
     }
 
     @Override
@@ -73,16 +99,44 @@ public class BookServiceImpl implements IBookService {
     }
 
     @Override
-    public void deleteBook(Long bookId) {
-        Book book = getBookById(bookId);
+    public void deleteBook(Long bookId) throws EntityNotFoundException {
+        Book book = getBookByIdToDelete(bookId);
         bookRepository.delete(book);
     }
 
     @Override
-    public boolean hasUsage(Book book) {
-        return borrowedBookService.getCountByBook(book) > 0;
+    public Book getBookByIdToDelete(Long bookId) throws EntityNotFoundException {
+        return bookRepository.findById(bookId)
+                .orElseThrow(() -> new EntityNotFoundException("Book not found"));
     }
 
+    @Override
+    public Book updateBookQuantity(Book book) {
+        return bookRepository.save(book);
+    }
+
+    @Override
+    public List<Book> findBooksByPublisherId(Long publisherId) {
+        return bookRepository.findByPublisher_PublisherId(publisherId);
+    }
+
+    @Override
+    public List<Book> findBooksByAuthorId(Long authorId) {
+        return bookRepository.findByAuthor_AuthorId(authorId);
+    }
+
+
+    private void validateAuthorAndPublisher(Book book) throws EntityNotFoundException {
+        // Check if author exists
+        Author author = authorRepository.findById(book.getAuthor().getAuthorId())
+                .orElseThrow(() -> new EntityNotFoundException("Author not found"));
+        book.setAuthor(author);
+
+        // Check if publisher exists
+        Publisher publisher = publisherRepository.findById(book.getPublisher().getPublisherId())
+                .orElseThrow(() -> new EntityNotFoundException("Publisher not found"));
+        book.setPublisher(publisher);
+    }
 
     // Helper method to perform validation using the BookValidator
     /*private void validateBook(BookDTO bookDTO) {

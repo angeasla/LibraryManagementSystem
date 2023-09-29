@@ -1,6 +1,11 @@
-package app.netlify.aslanidis.librarymanagementsystem.dto;
+package app.netlify.aslanidis.librarymanagementsystem.model;
 
-public class BorrowRequest {
+import jakarta.persistence.Embeddable;
+
+import java.io.Serializable;
+
+@Embeddable
+public class BorrowId implements Serializable {
     private Long userId;
     private Long bookId;
 

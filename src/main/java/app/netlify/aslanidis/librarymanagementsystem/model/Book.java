@@ -1,9 +1,10 @@
 package app.netlify.aslanidis.librarymanagementsystem.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.util.Date;
+import java.util.List;
 
 @Entity
 @Data
@@ -18,18 +19,36 @@ public class Book {
     @Column(name = "TITLE", nullable = false)
     private String title;
 
-    @Column(name = "AUTHOR", nullable = false)
-    private String author;
+    @ManyToOne
+    @JsonIgnoreProperties("books")
+    @JoinColumn(name = "AUTHOR_ID")
+    private Author author;
 
     @Column(name = "ISBN")
     private String isbn;
 
-    @Column(name = "PUBLISHER", nullable = false)
-    private String publisher;
+    @ManyToOne
+    @JsonIgnoreProperties("books")
+    @JoinColumn(name = "PUBLISHER_ID", nullable = false)
+    private Publisher publisher;
 
     @Column(name = "PAGES")
     private Long pages;
 
-    @Column(name = "STATUS")
-    private Integer status;
+    @Column(name = "PUBLICATION_YEAR")
+    private Long publicationYear;
+
+    @Column(name = "QUANTITY")
+    private Integer quantity;
+
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
+    private List<Borrow> borrows; // One book can be borrowed multiple times
+
+    public Integer addBook() {
+        return quantity++;
+    }
+
+    public Integer removeBook() {
+        return quantity--;
+    }
 }

@@ -12,5 +12,4 @@ public interface IUserService {
     User createUser(User user);
     User updateUser(Long userId, User user) throws EntityNotFoundException;
     void deleteUser(Long userId) throws EntityNotFoundException;
-    boolean hasUsage(User user);
 }
