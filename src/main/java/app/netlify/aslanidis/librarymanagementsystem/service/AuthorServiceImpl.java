@@ -1,12 +1,18 @@
 package app.netlify.aslanidis.librarymanagementsystem.service;
 
+import app.netlify.aslanidis.librarymanagementsystem.dto.AuthorDTO;
+import app.netlify.aslanidis.librarymanagementsystem.dto.BookDTO;
 import app.netlify.aslanidis.librarymanagementsystem.model.Author;
+import app.netlify.aslanidis.librarymanagementsystem.model.Book;
 import app.netlify.aslanidis.librarymanagementsystem.repository.AuthorRepository;
 import app.netlify.aslanidis.librarymanagementsystem.service.exceptions.EntityNotFoundException;
+import app.netlify.aslanidis.librarymanagementsystem.service.utilities.DTOConverter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AuthorServiceImpl implements IAuthorService {
@@ -17,6 +23,18 @@ public class AuthorServiceImpl implements IAuthorService {
     @Override
     public List<Author> getAllAuthors() {
         return authorRepository.findAll();
+    }
+
+    @Override
+    public Page<AuthorDTO> getAllAuthorsWithPagination(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.asc("lastname")));
+        Page<Author> authorPage = authorRepository.findAllByOrderByLastnameAsc(pageable);
+
+        List<AuthorDTO> authorsDto = authorPage.stream()
+                .map(DTOConverter::convertAuthorToShortDTO)
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(authorsDto, pageable, authorPage.getTotalElements());
     }
 
     @Override

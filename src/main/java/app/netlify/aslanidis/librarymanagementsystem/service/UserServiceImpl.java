@@ -4,6 +4,10 @@ import app.netlify.aslanidis.librarymanagementsystem.model.User;
 import app.netlify.aslanidis.librarymanagementsystem.repository.UserRepository;
 import app.netlify.aslanidis.librarymanagementsystem.service.exceptions.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 
@@ -21,6 +25,12 @@ public class UserServiceImpl implements IUserService {
     @Override
     public List<User> getAllUsers() {
         return userRepository.findAllByOrderByLastnameAscFirstnameAsc();
+    }
+
+    @Override
+    public Page<User> getAllUsersWithPagination(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.asc("lastname"), Sort.Order.asc("firstname")));
+        return userRepository.findAllByOrderByLastnameAscFirstnameAsc(pageable);
     }
 
     @Override

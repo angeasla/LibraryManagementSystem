@@ -4,6 +4,8 @@ import app.netlify.aslanidis.librarymanagementsystem.model.User;
 import app.netlify.aslanidis.librarymanagementsystem.service.IUserService;
 import app.netlify.aslanidis.librarymanagementsystem.service.exceptions.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,8 +23,18 @@ public class UserRestController {
     }
 
     @GetMapping
-    public List<User> getAllUsers() {
-        return userService.getAllUsers();
+    public ResponseEntity<List<User>> getAllUsers() {
+        List<User> users = userService.getAllUsers();
+        return new ResponseEntity<>(users, HttpStatus.OK);
+    }
+
+    @GetMapping("/pagination")
+    public ResponseEntity<Page<User>> getAllUsers(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size
+    ) {
+        Page<User> users = userService.getAllUsersWithPagination(page, size);
+        return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
     @GetMapping("{userId}")

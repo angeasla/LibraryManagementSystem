@@ -3,6 +3,7 @@ package app.netlify.aslanidis.librarymanagementsystem.service;
 import app.netlify.aslanidis.librarymanagementsystem.dto.BookDTO;
 import app.netlify.aslanidis.librarymanagementsystem.model.Book;
 import app.netlify.aslanidis.librarymanagementsystem.service.exceptions.EntityNotFoundException;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -20,4 +21,5 @@ public interface IBookService {
     Book updateBookQuantity(Book book);
     List<Book> findBooksByPublisherId(Long publisherId);
     List<Book> findBooksByAuthorId(Long authorId);
+    Page<BookDTO> getAllBooksWithPagination(int page, int size);
 }

@@ -6,6 +6,9 @@ import app.netlify.aslanidis.librarymanagementsystem.service.IBookService;
 import app.netlify.aslanidis.librarymanagementsystem.service.exceptions.EntityNotFoundException;
 import app.netlify.aslanidis.librarymanagementsystem.service.utilities.DTOConverter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -47,6 +50,15 @@ public class BookRestController {
     @GetMapping
     public List<BookDTO> getAllBooks() {
         return bookService.getAllBooks();
+    }
+
+    @GetMapping("/pagination")
+    public ResponseEntity<Page<BookDTO>> getAllBooks(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size
+    ) {
+        Page<BookDTO> books = bookService.getAllBooksWithPagination(page, size);
+        return ResponseEntity.ok(books);
     }
 
     @GetMapping("/search-by-title/{title}")

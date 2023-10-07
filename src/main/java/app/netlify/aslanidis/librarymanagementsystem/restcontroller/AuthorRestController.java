@@ -1,8 +1,10 @@
 package app.netlify.aslanidis.librarymanagementsystem.restcontroller;
+import app.netlify.aslanidis.librarymanagementsystem.dto.AuthorDTO;
 import app.netlify.aslanidis.librarymanagementsystem.model.Author;
 import app.netlify.aslanidis.librarymanagementsystem.service.IAuthorService;
 import app.netlify.aslanidis.librarymanagementsystem.service.exceptions.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,6 +24,15 @@ public class AuthorRestController {
     @GetMapping
     public List<Author> getAllAuthors() {
         return authorService.getAllAuthors();
+    }
+
+    @GetMapping("/pagination")
+    public ResponseEntity<Page<AuthorDTO>> getAllAuthors(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size
+    ) {
+        Page<AuthorDTO> authors = authorService.getAllAuthorsWithPagination(page, size);
+        return ResponseEntity.ok(authors);
     }
 
     @GetMapping("/{authorId}")

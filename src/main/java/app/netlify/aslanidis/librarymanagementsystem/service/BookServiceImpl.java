@@ -11,6 +11,7 @@ import app.netlify.aslanidis.librarymanagementsystem.repository.PublisherReposit
 import app.netlify.aslanidis.librarymanagementsystem.service.exceptions.EntityNotFoundException;
 import app.netlify.aslanidis.librarymanagementsystem.service.utilities.DTOConverter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -44,6 +45,18 @@ public class BookServiceImpl implements IBookService {
         return books.stream()
                 .map(DTOConverter::convertBookToDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Page<BookDTO> getAllBooksWithPagination(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.asc("title"), Sort.Order.asc("author.lastname")));
+        Page<Book> bookPage = bookRepository.findAllByOrderByTitleAscAuthor_LastnameAsc(pageable);
+
+        List<BookDTO> booksDto = bookPage.stream()
+                .map(DTOConverter::convertBookToDTO)
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(booksDto, pageable, bookPage.getTotalElements());
     }
 
     @Override

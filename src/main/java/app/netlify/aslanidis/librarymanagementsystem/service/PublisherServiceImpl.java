@@ -1,12 +1,18 @@
 package app.netlify.aslanidis.librarymanagementsystem.service;
 
+import app.netlify.aslanidis.librarymanagementsystem.dto.BookDTO;
+import app.netlify.aslanidis.librarymanagementsystem.dto.PublisherDTO;
+import app.netlify.aslanidis.librarymanagementsystem.model.Book;
 import app.netlify.aslanidis.librarymanagementsystem.model.Publisher;
 import app.netlify.aslanidis.librarymanagementsystem.repository.PublisherRepository;
 import app.netlify.aslanidis.librarymanagementsystem.service.exceptions.EntityNotFoundException;
+import app.netlify.aslanidis.librarymanagementsystem.service.utilities.DTOConverter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PublisherServiceImpl implements IPublisherService {
@@ -17,6 +23,17 @@ public class PublisherServiceImpl implements IPublisherService {
     @Override
     public List<Publisher> getAllPublishers() {
         return publisherRepository.findAll();
+    }
+
+    public Page<PublisherDTO> getAllPublishersWithPagination(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.asc("name")));
+        Page<Publisher> publisherPage = publisherRepository.findAllByOrderByNameAsc(pageable);
+
+        List<PublisherDTO> publishersDto = publisherPage.stream()
+                .map(DTOConverter::convertPublisherToShortDTO)
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(publishersDto, pageable, publisherPage.getTotalElements());
     }
 
     @Override

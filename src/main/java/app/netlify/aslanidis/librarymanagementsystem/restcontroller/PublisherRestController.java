@@ -1,9 +1,12 @@
 package app.netlify.aslanidis.librarymanagementsystem.restcontroller;
 
+import app.netlify.aslanidis.librarymanagementsystem.dto.BookDTO;
+import app.netlify.aslanidis.librarymanagementsystem.dto.PublisherDTO;
 import app.netlify.aslanidis.librarymanagementsystem.model.Publisher;
 import app.netlify.aslanidis.librarymanagementsystem.service.IPublisherService;
 import app.netlify.aslanidis.librarymanagementsystem.service.exceptions.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +26,15 @@ public class PublisherRestController {
     @GetMapping
     public List<Publisher> getAllPublishers() {
         return publisherService.getAllPublishers();
+    }
+
+    @GetMapping("/pagination")
+    public ResponseEntity<?> getAllPublishers(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size
+    ) {
+        Page<PublisherDTO> publishers = publisherService.getAllPublishersWithPagination(page, size);
+        return ResponseEntity.ok(publishers);
     }
 
     @GetMapping("{publisherId}")
