@@ -1,6 +1,7 @@
 package app.netlify.aslanidis.librarymanagementsystem.service;
 
 import app.netlify.aslanidis.librarymanagementsystem.model.User;
+import app.netlify.aslanidis.librarymanagementsystem.repository.BorrowRepository;
 import app.netlify.aslanidis.librarymanagementsystem.repository.UserRepository;
 import app.netlify.aslanidis.librarymanagementsystem.service.exceptions.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +17,14 @@ import java.util.List;
 @Service
 public class UserServiceImpl implements IUserService {
 
-    @Autowired
     private UserRepository userRepository;
+    private BorrowRepository borrowRepository;
 
     @Autowired
-    private IBorrowService borrowService;
+    public UserServiceImpl(UserRepository userRepository, BorrowRepository borrowRepository) {
+        this.userRepository = userRepository;
+        this.borrowRepository = borrowRepository;
+    }
 
     @Override
     public List<User> getAllUsers() {
@@ -67,6 +71,17 @@ public class UserServiceImpl implements IUserService {
             throw new EntityNotFoundException("User not found");
         }
         userRepository.deleteById(userId);
+    }
+
+    @Override
+    public List<User> getAllUsersWithActiveBorrows() {
+        List<User> users = userRepository.findAll();
+        for (User user : users) {
+            int activeBorrowCount = borrowRepository.countByUserAndReturned(user, 0);
+            user.setActiveBorrowCount(activeBorrowCount);
+            System.out.println("User: " + user.getUserId() + ", Active Borrow Count: " + activeBorrowCount);
+        }
+        return users;
     }
 
     // Helper method to perform validation using the UserValidator

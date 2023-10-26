@@ -29,4 +29,7 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Borrow> borrows; // One user can borrow multiple books
 
+    @Transient
+    private int activeBorrowCount;
+
 }

@@ -6,6 +6,7 @@ import app.netlify.aslanidis.librarymanagementsystem.model.BorrowId;
 import app.netlify.aslanidis.librarymanagementsystem.model.User;
 import app.netlify.aslanidis.librarymanagementsystem.repository.BookRepository;
 import app.netlify.aslanidis.librarymanagementsystem.repository.BorrowRepository;
+import app.netlify.aslanidis.librarymanagementsystem.repository.UserRepository;
 import app.netlify.aslanidis.librarymanagementsystem.service.exceptions.EntityNotFoundException;
 import app.netlify.aslanidis.librarymanagementsystem.service.utilities.BorrowUtility;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,17 +19,18 @@ import java.util.Optional;
 @Service
 public class BorrowServiceImpl implements IBorrowService {
 
-    @Autowired
     private BorrowRepository borrowRepository;
-
-    @Autowired
     private BookRepository bookRepository;
-
-    @Autowired
     private BookServiceImpl bookService;
+    private BorrowUtility borrowUtility;
 
     @Autowired
-    private BorrowUtility borrowUtility;
+    public BorrowServiceImpl(BorrowRepository borrowRepository, BookRepository bookRepository, BookServiceImpl bookService, BorrowUtility borrowUtility, UserRepository userRepository) {
+        this.borrowRepository = borrowRepository;
+        this.bookRepository = bookRepository;
+        this.bookService = bookService;
+        this.borrowUtility = borrowUtility;
+    }
 
     @Override
     public Optional<Borrow> borrowBook(Long userId, Long bookId) {

@@ -16,4 +16,5 @@ public interface BorrowRepository extends JpaRepository<Borrow, Long> {
     List<Borrow> findByUserAndReturnedFalse(User user);  // Active borrows from a user
     List<Borrow> findByUser(User user);  // User's borrow history
     List<Borrow> findByBook(Book book);  // Book's borrow history
+    int countByUserAndReturned(User user, Integer returned);
 }

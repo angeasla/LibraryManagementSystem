@@ -37,7 +37,7 @@ public class UserRestController {
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
-    @GetMapping("{userId}")
+    @GetMapping("/{userId}")
     public User getUserById(@PathVariable("userId") Long userId) throws EntityNotFoundException {
         return userService.getUserById(userId);
     }
@@ -61,5 +61,12 @@ public class UserRestController {
     @DeleteMapping("/{userId}")
     public void deleteUser(@PathVariable("userId") Long userId) throws EntityNotFoundException {
         userService.deleteUser(userId);
+    }
+
+    @GetMapping("/active-borrows")
+    public ResponseEntity<List<User>> getAllUsersWithActiveBorrows() {
+        System.out.println("Endpoint /active-borrows was called");
+        List<User> users = userService.getAllUsersWithActiveBorrows();
+        return ResponseEntity.ok(users);
     }
 }
