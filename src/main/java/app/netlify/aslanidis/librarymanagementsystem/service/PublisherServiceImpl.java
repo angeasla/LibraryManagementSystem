@@ -44,7 +44,7 @@ public class PublisherServiceImpl implements IPublisherService {
 
     @Override
     public Publisher getPublisherByName(String publisherName) {
-        return publisherRepository.findPublisherByName(publisherName);
+        return publisherRepository.findPublisherByNameContainingIgnoreCase(publisherName);
     }
 
     @Override

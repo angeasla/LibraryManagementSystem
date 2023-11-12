@@ -11,5 +11,5 @@ import java.util.List;
 public interface AuthorRepository extends JpaRepository<Author, Long> {
     List<Author> findAll();
     Page<Author> findAllByOrderByLastnameAsc(Pageable pageable);
-    Author findAuthorByLastname(String lastname);
+    Author findAuthorByLastnameContainingIgnoreCase(String lastname);
 }

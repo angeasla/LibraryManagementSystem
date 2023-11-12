@@ -45,7 +45,7 @@ public class AuthorServiceImpl implements IAuthorService {
 
     @Override
     public Author getAuthorByLastName(String lastname) {
-        return authorRepository.findAuthorByLastname(lastname);
+        return authorRepository.findAuthorByLastnameContainingIgnoreCase(lastname);
 
     }
 

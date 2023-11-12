@@ -10,7 +10,7 @@ import java.util.List;
 
 @Repository
 public interface PublisherRepository extends JpaRepository<Publisher, Long> {
-    Publisher findPublisherByName(String name);
+    Publisher findPublisherByNameContainingIgnoreCase(String name);
     List<Publisher> findAll();
     Page<Publisher> findAllByOrderByNameAsc(Pageable pageable);
 }
