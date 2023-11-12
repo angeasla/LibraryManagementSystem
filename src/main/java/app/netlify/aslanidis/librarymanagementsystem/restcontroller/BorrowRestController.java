@@ -1,5 +1,6 @@
 package app.netlify.aslanidis.librarymanagementsystem.restcontroller;
 
+import app.netlify.aslanidis.librarymanagementsystem.dto.BookDTO;
 import app.netlify.aslanidis.librarymanagementsystem.dto.BorrowRequest;
 import app.netlify.aslanidis.librarymanagementsystem.dto.ReturnRequest;
 import app.netlify.aslanidis.librarymanagementsystem.model.Book;
@@ -101,7 +102,7 @@ public class BorrowRestController {
     // View Borrow History by Book
     @GetMapping("/history/book/{bookId}")
     public ResponseEntity<List<Borrow>> getBorrowHistoryByBook(@PathVariable Long bookId) throws EntityNotFoundException {
-        Book book = bookService.getBookByIdToDelete(bookId);
+        BookDTO book = bookService.getBookById(bookId);
         if (book == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

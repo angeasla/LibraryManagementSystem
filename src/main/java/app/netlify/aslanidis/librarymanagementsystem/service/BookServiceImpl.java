@@ -123,6 +123,8 @@ public class BookServiceImpl implements IBookService {
                 .orElseThrow(() -> new EntityNotFoundException("Book not found"));
     }
 
+
+
     @Override
     public Book updateBookQuantity(Book book) {
         return bookRepository.save(book);

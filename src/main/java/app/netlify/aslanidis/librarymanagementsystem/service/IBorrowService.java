@@ -1,6 +1,6 @@
 package app.netlify.aslanidis.librarymanagementsystem.service;
 
-import app.netlify.aslanidis.librarymanagementsystem.model.Book;
+import app.netlify.aslanidis.librarymanagementsystem.dto.BookDTO;
 import app.netlify.aslanidis.librarymanagementsystem.model.Borrow;
 import app.netlify.aslanidis.librarymanagementsystem.model.User;
 import app.netlify.aslanidis.librarymanagementsystem.service.exceptions.EntityNotFoundException;
@@ -15,5 +15,5 @@ public interface IBorrowService {
     List<Borrow> getActiveBorrows();
     List<Borrow> getActiveBorrowsByUser(User user);
     List<Borrow> getBorrowHistoryByUser(User user);
-    List<Borrow> getBorrowHistoryByBook(Book book);
+    List<Borrow> getBorrowHistoryByBook(BookDTO book);
 }

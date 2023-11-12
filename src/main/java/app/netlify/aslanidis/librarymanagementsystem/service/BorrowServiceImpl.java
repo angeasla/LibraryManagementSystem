@@ -1,5 +1,6 @@
 package app.netlify.aslanidis.librarymanagementsystem.service;
 
+import app.netlify.aslanidis.librarymanagementsystem.dto.BookDTO;
 import app.netlify.aslanidis.librarymanagementsystem.model.Book;
 import app.netlify.aslanidis.librarymanagementsystem.model.Borrow;
 import app.netlify.aslanidis.librarymanagementsystem.model.BorrowId;
@@ -12,6 +13,7 @@ import app.netlify.aslanidis.librarymanagementsystem.service.utilities.BorrowUti
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -46,6 +48,7 @@ public class BorrowServiceImpl implements IBorrowService {
         BorrowId borrowId = new BorrowId();
         borrowId.setUserId(userId);
         borrowId.setBookId(bookId);
+        borrowId.setBorrowTimestamp(LocalDateTime.now());
         borrow.setId(borrowId);
 
         borrow.setUser(user);
@@ -68,7 +71,7 @@ public class BorrowServiceImpl implements IBorrowService {
             return Optional.empty();
         }
 
-        Optional<Borrow> borrow = borrowRepository.findByUserAndBookAndReturned(user, book, 0); // 0 = Not returned
+        Optional<Borrow> borrow = borrowRepository.findLatestBorrowByUserAndBookAndReturned(user, book, 0); // 0 = Not returned
         if (borrow.isPresent()) {
             borrow.get().setReturnDate(new Date());
             borrow.get().setReturned(1);  // 1 = Returned
@@ -97,7 +100,7 @@ public class BorrowServiceImpl implements IBorrowService {
     }
 
     @Override
-    public List<Borrow> getBorrowHistoryByBook(Book book) {
+    public List<Borrow> getBorrowHistoryByBook(BookDTO book) {
         return borrowRepository.findByBook(book);
     }
 
