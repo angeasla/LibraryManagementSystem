@@ -19,7 +19,7 @@ public interface BorrowRepository extends JpaRepository<Borrow, Long> {
     List<Borrow> findByUser(User user);  // User's borrow history
     List<Borrow> findByBook(BookDTO book);  // Book's borrow history
     int countByUserAndReturned(User user, Integer returned);
-
+    List<Borrow> findByReturnedTrue(); // Find borrows history
     @Query("SELECT b FROM Borrow b WHERE b.user = :user AND b.book = :book AND b.returned = :returned ORDER BY b.id.borrowTimestamp DESC")
     Optional<Borrow> findLatestBorrowByUserAndBookAndReturned(User user, Book book, Integer returned);
 

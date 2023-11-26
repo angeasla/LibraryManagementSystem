@@ -95,6 +95,10 @@ public class BorrowServiceImpl implements IBorrowService {
     }
 
     @Override
+    public List<Borrow> getBorrowHistory() {
+        return borrowRepository.findByReturnedTrue();
+    }
+    @Override
     public List<Borrow> getBorrowHistoryByUser(User user) {
         return borrowRepository.findByUser(user);
     }

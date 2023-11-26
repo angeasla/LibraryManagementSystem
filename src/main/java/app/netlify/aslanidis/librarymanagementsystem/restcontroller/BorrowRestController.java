@@ -109,4 +109,10 @@ public class BorrowRestController {
         List<Borrow> borrows = borrowService.getBorrowHistoryByBook(book);
         return new ResponseEntity<>(borrows, HttpStatus.OK);
     }
+
+    @GetMapping("/history")
+    public ResponseEntity<List<Borrow>> getBorrowHistory() {
+        List<Borrow> borrows = borrowService.getBorrowHistory();
+        return new ResponseEntity<>(borrows, HttpStatus.OK);
+    }
 }
