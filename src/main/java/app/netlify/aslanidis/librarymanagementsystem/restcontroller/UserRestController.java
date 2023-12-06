@@ -69,4 +69,9 @@ public class UserRestController {
         List<User> users = userService.getAllUsersWithActiveBorrows();
         return ResponseEntity.ok(users);
     }
+
+    @GetMapping("/count/total")
+    public Long getTotalCount() {
+        return userService.countUsers();
+    }
 }

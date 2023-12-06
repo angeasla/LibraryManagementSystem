@@ -15,4 +15,5 @@ public interface IPublisherService {
     Publisher updatePublisher(Long publisherId, Publisher publisher) throws EntityNotFoundException;
     void deletePublisher(Long publisherId);
     Page<PublisherDTO> getAllPublishersWithPagination(int page, int size);
+    Long countPublishers();
 }

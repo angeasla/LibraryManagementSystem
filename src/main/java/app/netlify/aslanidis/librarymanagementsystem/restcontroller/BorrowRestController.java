@@ -115,4 +115,14 @@ public class BorrowRestController {
         List<Borrow> borrows = borrowService.getBorrowHistory();
         return new ResponseEntity<>(borrows, HttpStatus.OK);
     }
+
+    @GetMapping("/count/total")
+    Long getTotalCount() {
+        return borrowService.countAllBorrows();
+    }
+
+    @GetMapping("/count/active")
+    Long getActiveCount() {
+        return borrowService.countActiveBorrows();
+    }
 }

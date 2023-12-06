@@ -17,8 +17,12 @@ import java.util.stream.Collectors;
 @Service
 public class AuthorServiceImpl implements IAuthorService {
 
+    private final AuthorRepository authorRepository;
+
     @Autowired
-    private AuthorRepository authorRepository;
+    public AuthorServiceImpl(AuthorRepository authorRepository) {
+        this.authorRepository = authorRepository;
+    }
 
     @Override
     public List<Author> getAllAuthors() {
@@ -35,6 +39,11 @@ public class AuthorServiceImpl implements IAuthorService {
                 .collect(Collectors.toList());
 
         return new PageImpl<>(authorsDto, pageable, authorPage.getTotalElements());
+    }
+
+    @Override
+    public Long countAuthors() {
+        return authorRepository.count();
     }
 
     @Override

@@ -17,8 +17,12 @@ import java.util.stream.Collectors;
 @Service
 public class PublisherServiceImpl implements IPublisherService {
 
+    private final PublisherRepository publisherRepository;
+
     @Autowired
-    private PublisherRepository publisherRepository;
+    public PublisherServiceImpl(PublisherRepository publisherRepository) {
+        this.publisherRepository = publisherRepository;
+    }
 
     @Override
     public List<Publisher> getAllPublishers() {
@@ -34,6 +38,11 @@ public class PublisherServiceImpl implements IPublisherService {
                 .collect(Collectors.toList());
 
         return new PageImpl<>(publishersDto, pageable, publisherPage.getTotalElements());
+    }
+
+    @Override
+    public Long countPublishers() {
+        return publisherRepository.count();
     }
 
     @Override
@@ -65,4 +74,6 @@ public class PublisherServiceImpl implements IPublisherService {
     public void deletePublisher(Long publisherId) {
         publisherRepository.deleteById(publisherId);
     }
+
+
 }

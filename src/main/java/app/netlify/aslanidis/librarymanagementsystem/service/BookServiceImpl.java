@@ -21,9 +21,9 @@ import java.util.stream.Collectors;
 @Service
 public class BookServiceImpl implements IBookService {
 
-    private BookRepository bookRepository;
-    private AuthorRepository authorRepository;
-    private PublisherRepository publisherRepository;
+    private final BookRepository bookRepository;
+    private final AuthorRepository authorRepository;
+    private final PublisherRepository publisherRepository;
 
     @Autowired
     public BookServiceImpl(BookRepository bookRepository,

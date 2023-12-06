@@ -15,4 +15,5 @@ public interface IAuthorService {
     Author updateAuthor(Long authorId, Author author) throws EntityNotFoundException;
     void deleteAuthor(Long authorId);
     Page<AuthorDTO> getAllAuthorsWithPagination(int page, int size);
+    Long countAuthors();
 }

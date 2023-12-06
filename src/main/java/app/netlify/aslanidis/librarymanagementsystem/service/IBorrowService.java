@@ -17,4 +17,6 @@ public interface IBorrowService {
     List<Borrow> getBorrowHistoryByUser(User user);
     List<Borrow> getBorrowHistoryByBook(BookDTO book);
     List<Borrow> getBorrowHistory();
+    Long countAllBorrows();
+    Long countActiveBorrows();
 }

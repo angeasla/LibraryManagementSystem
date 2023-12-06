@@ -15,4 +15,5 @@ public interface IUserService {
     User updateUser(Long userId, User user) throws EntityNotFoundException;
     void deleteUser(Long userId) throws EntityNotFoundException;
     List<User> getAllUsersWithActiveBorrows();
+    Long countUsers();
 }

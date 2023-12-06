@@ -60,4 +60,9 @@ public class AuthorRestController {
     public void deleteAuthor(@PathVariable("authorId") Long authorId) throws EntityNotFoundException {
         authorService.deleteAuthor(authorId);
     }
+
+    @GetMapping("/count/total")
+        public Long getTotalCount() {
+        return authorService.countAuthors();
+    }
 }

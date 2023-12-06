@@ -23,4 +23,9 @@ public interface BorrowRepository extends JpaRepository<Borrow, Long> {
     @Query("SELECT b FROM Borrow b WHERE b.user = :user AND b.book = :book AND b.returned = :returned ORDER BY b.id.borrowTimestamp DESC")
     Optional<Borrow> findLatestBorrowByUserAndBookAndReturned(User user, Book book, Integer returned);
 
+    @Query("SELECT b from Borrow b ORDER BY b.borrowDate")
+    Long countAllBorrows();
+
+    @Query("SELECT b FROM Borrow b WHERE b.returned = 0 ORDER BY b.borrowDate")
+    Long countActiveBorrows();
 }

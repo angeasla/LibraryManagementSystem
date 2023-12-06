@@ -17,8 +17,8 @@ import java.util.List;
 @Service
 public class UserServiceImpl implements IUserService {
 
-    private UserRepository userRepository;
-    private BorrowRepository borrowRepository;
+    private final UserRepository userRepository;
+    private final BorrowRepository borrowRepository;
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository, BorrowRepository borrowRepository) {
@@ -82,6 +82,10 @@ public class UserServiceImpl implements IUserService {
             System.out.println("User: " + user.getUserId() + ", Active Borrow Count: " + activeBorrowCount);
         }
         return users;
+    }
+
+    public Long countUsers() {
+        return userRepository.count();
     }
 
     // Helper method to perform validation using the UserValidator

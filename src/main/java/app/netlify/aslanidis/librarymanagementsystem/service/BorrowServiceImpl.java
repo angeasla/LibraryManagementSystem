@@ -21,10 +21,10 @@ import java.util.Optional;
 @Service
 public class BorrowServiceImpl implements IBorrowService {
 
-    private BorrowRepository borrowRepository;
-    private BookRepository bookRepository;
-    private BookServiceImpl bookService;
-    private BorrowUtility borrowUtility;
+    private final BorrowRepository borrowRepository;
+    private final BookRepository bookRepository;
+    private final BookServiceImpl bookService;
+    private final BorrowUtility borrowUtility;
 
     @Autowired
     public BorrowServiceImpl(BorrowRepository borrowRepository, BookRepository bookRepository, BookServiceImpl bookService, BorrowUtility borrowUtility, UserRepository userRepository) {
@@ -98,6 +98,17 @@ public class BorrowServiceImpl implements IBorrowService {
     public List<Borrow> getBorrowHistory() {
         return borrowRepository.findByReturnedTrue();
     }
+
+    @Override
+    public Long countAllBorrows() {
+        return borrowRepository.countAllBorrows();
+    }
+
+    @Override
+    public Long countActiveBorrows() {
+        return borrowRepository.countActiveBorrows();
+    }
+
     @Override
     public List<Borrow> getBorrowHistoryByUser(User user) {
         return borrowRepository.findByUser(user);

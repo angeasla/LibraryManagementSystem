@@ -62,4 +62,9 @@ public class PublisherRestController {
     public void deletePublisher(@PathVariable("publisherId") Long publisherId) throws EntityNotFoundException {
         publisherService.deletePublisher(publisherId);
     }
+
+    @GetMapping("/count/total")
+    public Long getTotalCount() {
+        return publisherService.countPublishers();
+    }
 }
