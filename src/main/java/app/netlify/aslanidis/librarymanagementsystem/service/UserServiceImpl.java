@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.List;
@@ -49,11 +50,13 @@ public class UserServiceImpl implements IUserService {
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
     }
 
+    @Transactional
     @Override
     public User createUser(User user) {
         return userRepository.save(user);
     }
 
+    @Transactional
     @Override
     public User updateUser(Long userId, User user) throws EntityNotFoundException {
         if (!userRepository.existsById(userId)) {
@@ -65,6 +68,7 @@ public class UserServiceImpl implements IUserService {
         return userRepository.save(user);
     }
 
+    @Transactional
     @Override
     public void deleteUser(Long userId) throws EntityNotFoundException {
         if (!userRepository.existsById(userId)) {

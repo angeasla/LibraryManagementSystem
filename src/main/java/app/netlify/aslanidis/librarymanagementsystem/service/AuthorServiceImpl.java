@@ -10,6 +10,7 @@ import app.netlify.aslanidis.librarymanagementsystem.service.utilities.DTOConver
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -58,11 +59,13 @@ public class AuthorServiceImpl implements IAuthorService {
 
     }
 
+    @Transactional
     @Override
     public Author createAuthor(Author author) {
         return authorRepository.save(author);
     }
 
+    @Transactional
     @Override
     public Author updateAuthor(Long authorId, Author author) throws EntityNotFoundException {
         if (!authorRepository.existsById(authorId)) {
@@ -73,6 +76,7 @@ public class AuthorServiceImpl implements IAuthorService {
         return authorRepository.save(author);
     }
 
+    @Transactional
     @Override
     public void deleteAuthor(Long authorId) {
         authorRepository.deleteById(authorId);

@@ -12,6 +12,7 @@ import app.netlify.aslanidis.librarymanagementsystem.service.exceptions.EntityNo
 import app.netlify.aslanidis.librarymanagementsystem.service.utilities.BorrowUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -34,6 +35,7 @@ public class BorrowServiceImpl implements IBorrowService {
         this.borrowUtility = borrowUtility;
     }
 
+    @Transactional
     @Override
     public Optional<Borrow> borrowBook(Long userId, Long bookId) {
         User user = borrowUtility.retrieveUser(userId);
@@ -62,6 +64,7 @@ public class BorrowServiceImpl implements IBorrowService {
         return Optional.of(borrowRepository.save(borrow));
     }
 
+    @Transactional
     @Override
     public Optional<Borrow> returnBook(Long userId, Long bookId) throws EntityNotFoundException {
         User user = borrowUtility.retrieveUser(userId);

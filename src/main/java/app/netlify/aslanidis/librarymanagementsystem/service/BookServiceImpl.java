@@ -13,6 +13,7 @@ import app.netlify.aslanidis.librarymanagementsystem.service.utilities.DTOConver
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -79,6 +80,7 @@ public class BookServiceImpl implements IBookService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     @Override
     public BookDTO createBook(BookDTO bookDTO) throws EntityNotFoundException {
         Book book = DTOConverter.convertDTOToBook(bookDTO);
@@ -87,6 +89,7 @@ public class BookServiceImpl implements IBookService {
         return DTOConverter.convertBookToDTO(savedBook);
     }
 
+    @Transactional
     @Override
     public BookDTO updateBook(Long bookId, BookDTO bookDTO) throws EntityNotFoundException {
         Book bookToUpdate = DTOConverter.convertDTOToBook(bookDTO);
@@ -106,11 +109,13 @@ public class BookServiceImpl implements IBookService {
         return DTOConverter.convertBookToDTO(updatedBook);
     }
 
+    @Transactional
     @Override
     public Book save(Book book) {
         return bookRepository.save(book);
     }
 
+    @Transactional
     @Override
     public void deleteBook(Long bookId) throws EntityNotFoundException {
         Book book = getBookByIdToDelete(bookId);
@@ -124,7 +129,7 @@ public class BookServiceImpl implements IBookService {
     }
 
 
-
+    @Transactional
     @Override
     public Book updateBookQuantity(Book book) {
         return bookRepository.save(book);

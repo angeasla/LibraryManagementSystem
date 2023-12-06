@@ -10,6 +10,7 @@ import app.netlify.aslanidis.librarymanagementsystem.service.utilities.DTOConver
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -56,11 +57,13 @@ public class PublisherServiceImpl implements IPublisherService {
         return publisherRepository.findPublisherByNameContainingIgnoreCase(publisherName);
     }
 
+    @Transactional
     @Override
     public Publisher createPublisher(Publisher publisher) {
         return publisherRepository.save(publisher);
     }
 
+    @Transactional
     @Override
     public Publisher updatePublisher(Long publisherId, Publisher publisher) throws EntityNotFoundException {
         if (!publisherRepository.existsById(publisherId)) {
@@ -70,6 +73,7 @@ public class PublisherServiceImpl implements IPublisherService {
         return publisherRepository.save(publisher);
     }
 
+    @Transactional
     @Override
     public void deletePublisher(Long publisherId) {
         publisherRepository.deleteById(publisherId);
