@@ -5,6 +5,7 @@ import lombok.Getter;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Getter
 @Embeddable
@@ -23,5 +24,18 @@ public class BorrowId implements Serializable {
 
     public void setBorrowTimestamp(LocalDateTime borrowTimestamp) {
         this.borrowTimestamp = borrowTimestamp;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BorrowId borrowId = (BorrowId) o;
+        return Objects.equals(userId, borrowId.userId) && Objects.equals(bookId, borrowId.bookId) && Objects.equals(borrowTimestamp, borrowId.borrowTimestamp);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(userId, bookId, borrowTimestamp);
     }
 }

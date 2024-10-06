@@ -3,6 +3,7 @@ package app.netlify.aslanidis.librarymanagementsystem.repository;
 import app.netlify.aslanidis.librarymanagementsystem.dto.BookDTO;
 import app.netlify.aslanidis.librarymanagementsystem.model.Book;
 import app.netlify.aslanidis.librarymanagementsystem.model.Borrow;
+import app.netlify.aslanidis.librarymanagementsystem.model.BorrowId;
 import app.netlify.aslanidis.librarymanagementsystem.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -12,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface BorrowRepository extends JpaRepository<Borrow, Long> {
+public interface BorrowRepository extends JpaRepository<Borrow, BorrowId> {
     Optional<Borrow> findByUserAndBookAndReturned(User user, Book book, Integer returned);
     List<Borrow> findByReturnedFalse();  // Find active borrows
     List<Borrow> findByUserAndReturnedFalse(User user);  // Active borrows from a user
