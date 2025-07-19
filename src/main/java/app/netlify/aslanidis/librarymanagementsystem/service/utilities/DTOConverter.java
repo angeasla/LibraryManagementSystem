@@ -16,7 +16,7 @@ public class DTOConverter {
         dto.setIsbn(book.getIsbn());
         dto.setPages(book.getPages());
         dto.setPublicationYear(book.getPublicationYear());
-        dto.setQuantity(book.getQuantity());
+        dto.setQuantity(book.getTotalCopies()); // Use calculated field from Book model
         dto.setAuthor(convertAuthorToShortDTO(book.getAuthor()));
         dto.setPublisher(convertPublisherToShortDTO(book.getPublisher()));
         return dto;
@@ -44,7 +44,7 @@ public class DTOConverter {
         book.setIsbn(dto.getIsbn());
         book.setPages(dto.getPages());
         book.setPublicationYear(dto.getPublicationYear());
-        book.setQuantity(dto.getQuantity());
+        // Note: quantity is now handled through BookCopy entities
 
         Author author = new Author();
         author.setAuthorId(dto.getAuthor().getAuthorId());

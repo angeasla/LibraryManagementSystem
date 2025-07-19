@@ -11,15 +11,15 @@ import java.util.Objects;
 @Embeddable
 public class BorrowId implements Serializable {
     private Long userId;
-    private Long bookId;
+    private Long bookCopyId;
     private LocalDateTime borrowTimestamp;
 
     public void setUserId(Long userId) {
         this.userId = userId;
     }
 
-    public void setBookId(Long bookId) {
-        this.bookId = bookId;
+    public void setBookCopyId(Long bookCopyId) {
+        this.bookCopyId = bookCopyId;
     }
 
     public void setBorrowTimestamp(LocalDateTime borrowTimestamp) {
@@ -31,11 +31,11 @@ public class BorrowId implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         BorrowId borrowId = (BorrowId) o;
-        return Objects.equals(userId, borrowId.userId) && Objects.equals(bookId, borrowId.bookId) && Objects.equals(borrowTimestamp, borrowId.borrowTimestamp);
+        return Objects.equals(userId, borrowId.userId) && Objects.equals(bookCopyId, borrowId.bookCopyId) && Objects.equals(borrowTimestamp, borrowId.borrowTimestamp);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(userId, bookId, borrowTimestamp);
+        return Objects.hash(userId, bookCopyId, borrowTimestamp);
     }
 }

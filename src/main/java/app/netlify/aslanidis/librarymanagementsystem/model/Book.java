@@ -38,17 +38,17 @@ public class Book {
     @Column(name = "PUBLICATION_YEAR")
     private Long publicationYear;
 
-    @Column(name = "QUANTITY")
-    private Integer quantity;
-
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
-    private List<Borrow> borrows; // One book can be borrowed multiple times
+    private List<BookCopy> copies;
 
-    public Integer addBook() {
-        return quantity++;
+    // Calculated field - total number of copies
+    public Integer getTotalCopies() {
+        return copies != null ? copies.size() : 0;
     }
 
-    public Integer removeBook() {
-        return quantity--;
+    // Calculated field - available copies
+    public Integer getAvailableCopies() {
+        return copies != null ? 
+            (int) copies.stream().filter(BookCopy::getIsAvailable).count() : 0;
     }
 }

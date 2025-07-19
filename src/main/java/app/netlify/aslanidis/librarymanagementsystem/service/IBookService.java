@@ -18,7 +18,7 @@ public interface IBookService {
     Book save(Book book);
     void deleteBook(Long bookId) throws EntityNotFoundException;
     Book getBookByIdToDelete(Long bookId) throws EntityNotFoundException;
-    Book updateBookQuantity(Book book);
+
     List<Book> findBooksByPublisherId(Long publisherId);
     List<Book> findBooksByAuthorId(Long authorId);
     Page<BookDTO> getAllBooksWithPagination(int page, int size);

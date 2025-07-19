@@ -2,9 +2,11 @@ package app.netlify.aslanidis.librarymanagementsystem.service;
 
 import app.netlify.aslanidis.librarymanagementsystem.dto.BookDTO;
 import app.netlify.aslanidis.librarymanagementsystem.model.Book;
+import app.netlify.aslanidis.librarymanagementsystem.model.BookCopy;
 import app.netlify.aslanidis.librarymanagementsystem.model.Borrow;
 import app.netlify.aslanidis.librarymanagementsystem.model.BorrowId;
 import app.netlify.aslanidis.librarymanagementsystem.model.User;
+import app.netlify.aslanidis.librarymanagementsystem.repository.BookCopyRepository;
 import app.netlify.aslanidis.librarymanagementsystem.repository.BookRepository;
 import app.netlify.aslanidis.librarymanagementsystem.repository.BorrowRepository;
 import app.netlify.aslanidis.librarymanagementsystem.repository.UserRepository;
@@ -24,13 +26,15 @@ public class BorrowServiceImpl implements IBorrowService {
 
     private final BorrowRepository borrowRepository;
     private final BookRepository bookRepository;
+    private final BookCopyRepository bookCopyRepository;
     private final BookServiceImpl bookService;
     private final BorrowUtility borrowUtility;
 
     @Autowired
-    public BorrowServiceImpl(BorrowRepository borrowRepository, BookRepository bookRepository, BookServiceImpl bookService, BorrowUtility borrowUtility, UserRepository userRepository) {
+    public BorrowServiceImpl(BorrowRepository borrowRepository, BookRepository bookRepository, BookCopyRepository bookCopyRepository, BookServiceImpl bookService, BorrowUtility borrowUtility, UserRepository userRepository) {
         this.borrowRepository = borrowRepository;
         this.bookRepository = bookRepository;
+        this.bookCopyRepository = bookCopyRepository;
         this.bookService = bookService;
         this.borrowUtility = borrowUtility;
     }
@@ -41,25 +45,33 @@ public class BorrowServiceImpl implements IBorrowService {
         User user = borrowUtility.retrieveUser(userId);
         Book book = bookRepository.findById(bookId).orElse(null);
 
-        // Check if user or book is null or if the book is out of stock
-        if (user == null || book == null || book.getQuantity() <= 0) {
+        if (user == null || book == null) {
             return Optional.empty();
         }
 
+        // Find an available copy of the book
+        Optional<BookCopy> availableCopy = bookCopyRepository.findFirstByBookAndIsAvailable(book, true);
+        if (!availableCopy.isPresent()) {
+            return Optional.empty(); // No available copies
+        }
+
+        BookCopy bookCopy = availableCopy.get();
+        
         Borrow borrow = new Borrow();
         BorrowId borrowId = new BorrowId();
         borrowId.setUserId(userId);
-        borrowId.setBookId(bookId);
+        borrowId.setBookCopyId(bookCopy.getCopyId());
         borrowId.setBorrowTimestamp(LocalDateTime.now());
         borrow.setId(borrowId);
 
         borrow.setUser(user);
-        borrow.setBook(book);
+        borrow.setBookCopy(bookCopy);
         borrow.setBorrowDate(new Date());
         borrow.setReturned(0);  // 0 = Not returned
 
-        book.removeBook();  // Reduce book quantity
-        bookService.updateBookQuantity(book);
+        // Mark the copy as unavailable
+        bookCopy.setIsAvailable(false);
+        bookCopyRepository.save(bookCopy);
 
         return Optional.of(borrowRepository.save(borrow));
     }
@@ -68,23 +80,31 @@ public class BorrowServiceImpl implements IBorrowService {
     @Override
     public Optional<Borrow> returnBook(Long userId, Long bookId) throws EntityNotFoundException {
         User user = borrowUtility.retrieveUser(userId);
-        Book book = bookService.getBookByIdToDelete(bookId);
+        Book book = bookRepository.findById(bookId).orElse(null);
 
         if (user == null || book == null) {
             return Optional.empty();
         }
 
-        Optional<Borrow> borrow = borrowRepository.findLatestBorrowByUserAndBookAndReturned(user, book, 0); // 0 = Not returned
-        if (borrow.isPresent()) {
-            borrow.get().setReturnDate(new Date());
-            borrow.get().setReturned(1);  // 1 = Returned
+        // Find all active borrows for this user and book (through book copies)
+        List<Borrow> activeBorrows = borrowRepository.findByUserAndReturnedFalse(user);
+        Optional<Borrow> targetBorrow = activeBorrows.stream()
+            .filter(borrow -> borrow.getBookCopy().getBook().getBookId().equals(bookId))
+            .findFirst();
 
-            book.addBook();  // Increase book quantity
-            bookService.updateBookQuantity(book);
+        if (targetBorrow.isPresent()) {
+            Borrow borrow = targetBorrow.get();
+            borrow.setReturnDate(new Date());
+            borrow.setReturned(1);  // 1 = Returned
 
-            return Optional.of(borrowRepository.save(borrow.get()));
+            // Mark the copy as available again
+            BookCopy bookCopy = borrow.getBookCopy();
+            bookCopy.setIsAvailable(true);
+            bookCopyRepository.save(bookCopy);
+
+            return Optional.of(borrowRepository.save(borrow));
         }
-        return Optional.empty();  // Book is not borrowed from this user or has be returned
+        return Optional.empty();  // No active borrow found for this user and book
     }
 
     @Override
@@ -118,8 +138,13 @@ public class BorrowServiceImpl implements IBorrowService {
     }
 
     @Override
-    public List<Borrow> getBorrowHistoryByBook(BookDTO book) {
-        return borrowRepository.findByBook(book);
+    public List<Borrow> getBorrowHistoryByBook(BookDTO bookDTO) {
+        // Convert BookDTO to Book entity
+        Book book = bookRepository.findById(bookDTO.getBookId()).orElse(null);
+        if (book == null) {
+            return List.of(); // Return empty list if book not found
+        }
+        return borrowRepository.findByBookCopy_Book(book);
     }
 
     // Helper method to perform validation using the BorrowValidator

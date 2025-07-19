@@ -25,14 +25,17 @@ public class BookServiceImpl implements IBookService {
     private final BookRepository bookRepository;
     private final AuthorRepository authorRepository;
     private final PublisherRepository publisherRepository;
+    private final IBookCopyService bookCopyService;
 
     @Autowired
     public BookServiceImpl(BookRepository bookRepository,
                            AuthorRepository authorRepository,
-                           PublisherRepository publisherRepository) {
+                           PublisherRepository publisherRepository,
+                           IBookCopyService bookCopyService) {
         this.bookRepository = bookRepository;
         this.authorRepository = authorRepository;
         this.publisherRepository = publisherRepository;
+        this.bookCopyService = bookCopyService;
     }
 
     @Override
@@ -86,6 +89,12 @@ public class BookServiceImpl implements IBookService {
         Book book = DTOConverter.convertDTOToBook(bookDTO);
         validateAuthorAndPublisher(book);
         Book savedBook = bookRepository.save(book);
+        
+        // Create book copies based on the quantity from DTO
+        if (bookDTO.getQuantity() != null && bookDTO.getQuantity() > 0) {
+            bookCopyService.createMultipleBookCopies(savedBook, bookDTO.getQuantity());
+        }
+        
         return DTOConverter.convertBookToDTO(savedBook);
     }
 
@@ -103,9 +112,22 @@ public class BookServiceImpl implements IBookService {
         existingBook.setPublisher(bookToUpdate.getPublisher());
         existingBook.setPages(bookToUpdate.getPages());
         existingBook.setPublicationYear(bookToUpdate.getPublicationYear());
-        existingBook.setQuantity(bookToUpdate.getQuantity());
 
         Book updatedBook = bookRepository.save(existingBook);
+        
+        // Handle quantity changes by adding/removing book copies
+        Integer currentCopies = bookCopyService.getTotalCopiesCount(existingBook);
+        Integer requestedQuantity = bookDTO.getQuantity();
+        
+        if (requestedQuantity != null && !requestedQuantity.equals(currentCopies)) {
+            if (requestedQuantity > currentCopies) {
+                // Add more copies
+                bookCopyService.createMultipleBookCopies(existingBook, requestedQuantity - currentCopies);
+            }
+            // Note: We don't automatically remove copies if quantity is reduced
+            // This should be handled separately to avoid data loss
+        }
+        
         return DTOConverter.convertBookToDTO(updatedBook);
     }
 
@@ -129,11 +151,7 @@ public class BookServiceImpl implements IBookService {
     }
 
 
-    @Transactional
-    @Override
-    public Book updateBookQuantity(Book book) {
-        return bookRepository.save(book);
-    }
+
 
     @Override
     public List<Book> findBooksByPublisherId(Long publisherId) {

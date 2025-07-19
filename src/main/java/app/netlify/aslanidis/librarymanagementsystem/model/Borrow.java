@@ -32,7 +32,7 @@ public class Borrow {
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("bookId")  // This maps the bookId attribute of embedded id
-    @JoinColumn(name = "BOOK_ID")
-    private Book book;
+    @MapsId("bookCopyId")  // This maps the bookCopyId attribute of embedded id
+    @JoinColumn(name = "BOOK_COPY_ID")
+    private BookCopy bookCopy;
 }
